@@ -1,0 +1,215 @@
+
+use_bpm 80
+vocal_notes = [:B3, :E4, :B3, :B3, :B3, :A3, :A4, :G4, :D4, :E4]
+vocal_notes2 = [:E4, :E4, :Fs4, :G4,
+                :A4, :Fs4, :G4, :E4,
+                :B3, :E4, :B3, :B3,
+                :B3, :A3, :Fs4, :Fs4,
+                :Fs4, :Fs4, :B3, :B3,
+                :E4, :B3, :B3, :B3]
+vocal_notes3 = [:Fs4, :D4, :D4, :B3, :B3, :B3, :C4, :B3]
+vocal_notes4 = [:A2, :A2, :G2, :A2, :A2, :G2, :A2, :G2, :A2, :A2, :As2, :A2]
+sleeps = [2, 0.5, 0.5, 0.5, 0.7, 0.5]
+sleeps2 = [1.3, 0.2, 0.3, 0.2,
+           0.3, 0.2, 0.3, 0.5,
+           2, 0.5, 0.5, 0.5,
+           0.7, 0.5, 1.3, 0.5,
+           0.5, 0.5, 2, 0.15,
+           0.15, 0.7, 0.15, 0.15, 1.9]
+sleeps3 = [0.5, 0.25, 1, 0.2, 0.3, 0.8, 0.2, 1.25]
+sleeps4 = [0.5, 0.25, 0.25, 0.5, 0.5, 0.25, 0.2, 0.3, 0.2, 0.3, 0.25, 0.75, 0.25, 0.25]
+ksleep1 = [0.5, 0.5, 0.3, 0.2, 0.3, 0.2, 0.5, 1.5]
+ksleep2 = [0.75, 0.75, 1, 0.3, 0.7, 0.5, 0.75, 0.75, 1, 1]
+i = 0
+ii = 0
+v = 0
+vv = 0
+iii = 0
+iiii = 0
+index = 0
+
+define :clicks do |csleep|
+  sample :drum_snare_soft
+  sample :drum_cymbal_pedal
+  sample :perc_snap2, amp: 0.5
+  sleep csleep
+end
+
+define :kicktro do
+  sample :bd_tek
+  sample :bd_808
+  sleep 0.5
+  sample :bd_tek
+  sample :bd_808
+  sleep 0.5
+  sample :bd_tek
+  sample :bd_808
+  sleep 0.3
+  sample :bd_tek
+  sample :bd_808
+  sample "/Users/dj/documents/sample1.wav", amp: 3
+  sleep 0.2
+  sample :bd_tek
+  sample :bd_808
+  sleep 0.3
+  sample :bd_tek
+  sample :bd_808
+  sleep 0.2
+  sample :bd_tek
+  sample :bd_808
+  sleep 0.5
+  sample :bd_tek
+  sample :bd_808
+  sleep 1.5
+end
+
+define :kicks do
+  10.times do
+    sample :drum_bass_soft
+    sample :bd_tek
+    sample :bd_808
+    sleep ksleep2 [v]
+    v = v + 1
+  end
+  v = 0
+  sample :drum_bass_soft, sustain: 0.3
+  sample :bd_tek, sustain: 0.3
+  sample :bd_808, sustain: 0.3
+  sleep 0.5
+end
+
+define :basse do |bassnote|
+  use_synth :bass_foundation
+  play :B1, release: 0.6
+  sleep 0.75
+  play :E1
+  sleep 1.75
+  play :E1, release: 0.6
+  sleep 0.5
+  play :G1, release: 0.6
+  sleep 0.5
+  play bassnote, release: 0.6
+  sleep 0.5
+  
+end
+
+
+define :piano1 do
+  use_synth :piano
+  play [:A3, :B3, :Ds4, :G4, :B4], amp: 2
+  sleep 0.75
+  play [:G3, :B3, :D4, :Fs4], amp: 2, sustain: 2
+  sleep 3.25
+end
+define :vocal1 do
+  use_synth :pluck
+  sleep 1.3
+  4.times do
+    play :Fs4
+    sleep 0.5
+  end
+  6.times do
+    sleep sleeps [ii]
+    play vocal_notes [i]
+    i = i + 1
+    ii = ii + 1
+  end
+  ii = 0
+  if i >= 10
+    i = 0
+    25.times do
+      sleep sleeps2 [ii]
+      play vocal_notes2 [i]
+      i = i + 1
+      ii = ii + 1
+    end
+    i = 0
+    ii = 0
+  end
+end
+
+define :vocal2 do
+  use_synth :pluck
+  play vocal_notes3 [iii]
+  sleep 0.5
+  iii = iii + 1
+  play vocal_notes3 [iii]
+  sleep 0.25
+  iii = iii + 1
+  play vocal_notes3 [iii]
+  sleep 1
+  iii = iii + 1
+  play vocal_notes3 [iii]
+  sleep 0.2
+  iii = iii + 1
+  play vocal_notes3 [iii]
+  sleep 0.3
+  iii = iii + 1
+  play vocal_notes3 [iii]
+  sleep 0.8
+  iii = iii + 1
+  play vocal_notes3 [iii]
+  sleep 0.2
+  iii = iii + 1
+  play vocal_notes3 [iii]
+  sleep 1.25
+  iii = iii + 1
+end
+iii = 0
+
+define :vocal3 do
+  use_synth :pretty_bell
+  12.times do
+    play vocal_notes4 [iiii]
+    sleep 0.5
+    iiii = iiii + 1
+  end
+  iiii = 0
+end
+
+
+live_loop :trotro do
+  kicktro
+  stop
+end
+sleep 3
+live_loop :clickies do
+  clicks 2
+  clicks 1.25
+  clicks 0.75
+  clicks 2
+  clicks 2
+end
+sleep 1
+in_thread do
+  16.times do
+    basse :A1
+    basse :r
+  end
+end
+live_loop :backing do
+  sample :drum_cymbal_hard, rpitch: 12, amp: 0.2, sustain: 0.4
+  sample :drum_cymbal_soft, rpitch: 1, amp: 0.3, sustain: 0.4
+  sleep 0.5
+end
+sleep 8
+live_loop :bass_drum do
+  1
+  kicks
+end
+sleep 8
+in_thread do
+  12.times do
+    piano1
+  end
+end
+sleep 16
+live_loop :vocalss do
+  vocal1
+  3.times do
+    vocal2
+    vocal3
+  end
+end
+
+

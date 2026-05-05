@@ -16,8 +16,8 @@ sleeps2 = [1.3, 0.2, 0.3, 0.2,
            0.7, 0.5, 1.3, 0.5,
            0.5, 0.5, 2, 0.15,
            0.15, 0.7, 0.15, 0.15, 1.9]
-sleeps3 = [0.5, 0.25, 1, 0.2, 0.3, 0.8, 0.2, 1.25]
-sleeps4 = [0.5, 0.25, 0.25, 0.5, 0.5, 0.25, 0.2, 0.3, 0.2, 0.3, 0.25, 0.75, 0.25, 0.25]
+sleeps3 = [0.5, 0.25, 1, 0.25, 0.5, 0.3, 0.2, 0.5]
+sleeps4 = [0.5, 0.25, 0.25, 0.5, 0.3, 0.2, 0.2, 0.3, 0.2, 0.5, 0.3, 1]
 ksleep1 = [0.5, 0.5, 0.3, 0.2, 0.3, 0.2, 0.5, 1.5]
 ksleep2 = [0.75, 0.75, 1, 0.3, 0.7, 0.5, 0.75, 0.75, 1, 1]
 i = 0
@@ -26,7 +26,12 @@ v = 0
 vv = 0
 iii = 0
 iiii = 0
+iiiii = 0
+iiiiii = 0
 index = 0
+vol = 1
+vol2 = 1
+vol3 = 1
 
 define :clicks do |csleep|
   sample :drum_snare_soft
@@ -90,7 +95,6 @@ define :basse do |bassnote|
   sleep 0.5
   play bassnote, release: 0.6
   sleep 0.5
-  
 end
 
 
@@ -101,115 +105,143 @@ define :piano1 do
   play [:G3, :B3, :D4, :Fs4], amp: 2, sustain: 2
   sleep 3.25
 end
+
 define :vocal1 do
   use_synth :pluck
-  sleep 1.3
-  4.times do
-    play :Fs4
-    sleep 0.5
-  end
-  6.times do
-    sleep sleeps [ii]
-    play vocal_notes [i]
-    i = i + 1
-    ii = ii + 1
-  end
-  ii = 0
-  if i >= 10
-    i = 0
-    25.times do
-      sleep sleeps2 [ii]
-      play vocal_notes2 [i]
+  with_fx :reverb do
+    sleep 1.3
+    4.times do
+      play :Fs4
+      sleep 0.5
+    end
+    6.times do
+      sleep sleeps [ii]
+      play vocal_notes [i]
       i = i + 1
       ii = ii + 1
     end
-    i = 0
+    sleep 1.3
+    4.times do
+      play :Fs4
+      sleep 0.5
+    end
     ii = 0
+    4.times do
+      sleep sleeps [ii]
+      play vocal_notes [i]
+      i = i + 1
+      ii = ii + 1
+    end
+    sleep 1.2
+    ii = 0
+    if i >= 10
+      i = 0
+      25.times do
+        sleep sleeps2 [ii]
+        play vocal_notes2 [i]
+        i = i + 1
+        ii = ii + 1
+      end
+      i = 0
+      ii = 0
+    end
   end
 end
 
 define :vocal2 do
   use_synth :pluck
-  play vocal_notes3 [iii]
-  sleep 0.5
-  iii = iii + 1
-  play vocal_notes3 [iii]
-  sleep 0.25
-  iii = iii + 1
-  play vocal_notes3 [iii]
-  sleep 1
-  iii = iii + 1
-  play vocal_notes3 [iii]
-  sleep 0.2
-  iii = iii + 1
-  play vocal_notes3 [iii]
-  sleep 0.3
-  iii = iii + 1
-  play vocal_notes3 [iii]
-  sleep 0.8
-  iii = iii + 1
-  play vocal_notes3 [iii]
-  sleep 0.2
-  iii = iii + 1
-  play vocal_notes3 [iii]
-  sleep 1.25
-  iii = iii + 1
+  8.times do
+    play vocal_notes3 [iii]
+    sleep sleeps3 [iiiii]
+    iii = iii + 1
+    iiiii = iiiii + 1
+  end
+  iii = 0
+  iiiii = 0
 end
-iii = 0
 
 define :vocal3 do
   use_synth :pretty_bell
-  12.times do
-    play vocal_notes4 [iiii]
-    sleep 0.5
-    iiii = iiii + 1
+  with_fx :reverb do
+    12.times do
+      play vocal_notes4 [iiii]
+      sleep sleeps4 [iiiiii]
+      iiii = iiii + 1
+      iiiiii = iiiiii + 1
+    end
+    iiii = 0
+    iiiiii = 0
   end
-  iiii = 0
 end
 
-
+sample "/Users/dj/documents/transi2.wav"
+sleep sample_duration "/Users/dj/documents/transi2.wav"
 live_loop :trotro do
   kicktro
   stop
 end
 sleep 3
-live_loop :clickies do
-  clicks 2
-  clicks 1.25
-  clicks 0.75
-  clicks 2
-  clicks 2
+in_thread do
+  12.times do
+    clicks 2
+    clicks 1.25
+    clicks 0.75
+    clicks 2
+    clicks 2
+  end
 end
 sleep 1
 in_thread do
-  16.times do
+  8.times do
     basse :A1
     basse :r
   end
+  4.times do
+    with_fx :level, amp: vol3 do
+      basse :A1
+      basse :r
+      vol3 = vol3 - 0.25
+    end
+  end
 end
-live_loop :backing do
-  sample :drum_cymbal_hard, rpitch: 12, amp: 0.2, sustain: 0.4
-  sample :drum_cymbal_soft, rpitch: 1, amp: 0.3, sustain: 0.4
-  sleep 0.5
-end
-sleep 8
-live_loop :bass_drum do
-  1
-  kicks
+
+in_thread do
+  192.times do
+    sample :drum_cymbal_hard, rpitch: 12, amp: 0.2, sustain: 0.4
+    sample :drum_cymbal_soft, rpitch: 1, amp: 0.3, sustain: 0.4
+    sleep 0.5
+  end
 end
 sleep 8
 in_thread do
-  12.times do
+  10.times do
+    kicks
+  end
+end
+
+sleep 8
+live_loop :piano do
+  16.times do
     piano1
   end
+  4.times do
+    with_fx :level, amp: vol2 do
+      piano1
+      vol2 = vol2 - 0.25
+    end
+  end
+  stop
 end
 sleep 16
 live_loop :vocalss do
   vocal1
-  3.times do
-    vocal2
-    vocal3
+  4.times do
+    with_fx :level, amp: vol do
+      vocal2
+      vocal3
+      vol = vol - 0.25
+    end
   end
+  stop
 end
-
 
